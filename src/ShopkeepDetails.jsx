@@ -76,7 +76,7 @@ const ShopkeepDetails = () => {
         <Card>
           <CardMedia
             component="img"
-            image={shopkeepInfo.image_url || "https://via.placeholder.com/200"}
+            image={shopkeepInfo.image_url}
             alt={shopkeepInfo.name}
           />
           <CardContent>
