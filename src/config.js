@@ -3,5 +3,5 @@ export const API_ENV_URL = {
   PROD: "https://shopkeeps-fastapi.onrender.com",
 };
 
-// Dynamically select the API URL based on the environment
+export const PLAYER_VIEW = process.env.REACT_APP_PLAYER_VIEW === "true";
 export const API_BASE_URL = API_ENV_URL[process.env.REACT_APP_ENV || "DEV"];
