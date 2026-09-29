@@ -41,12 +41,60 @@ export const generateInventory = async (id) => {
   }
 };
 
-export const fetchAllShopkeeps = async () => {
+export const fetchAllShopkeeps = async (revealedOnly = false) => {
   try {
-    const response = await axios.get(`${API_BASE_URL}/shopkeeps`);
+    const url = revealedOnly
+      ? `${API_BASE_URL}/shopkeeps?revealed_only=true`
+      : `${API_BASE_URL}/shopkeeps`;
+    const response = await axios.get(url);
     return { data: response.data, error: null };
   } catch (err) {
     return { data: null, error: err.message };
+  }
+};
+
+export const revealShopkeep = async (id) => {
+  try {
+    const response = await axios.patch(`${API_BASE_URL}/shopkeep/${id}/reveal`);
+    return { data: response.data, error: null };
+  } catch (err) {
+    return { data: null, error: err.message };
+  }
+};
+
+export const updateShopkeep = async (id, updates) => {
+  try {
+    const response = await axios.patch(`${API_BASE_URL}/shopkeep/${id}`, updates);
+    return { data: response.data, error: null };
+  } catch (err) {
+    return { data: null, error: err.message };
+  }
+};
+
+export const addItem = async (shopkeepId, item) => {
+  try {
+    const response = await axios.post(`${API_BASE_URL}/shopkeep/${shopkeepId}/item`, item);
+    return { data: response.data, error: null };
+  } catch (err) {
+    return { data: null, error: err.message };
+  }
+};
+
+export const updateItem = async (itemId, updates) => {
+  try {
+    const response = await axios.patch(`${API_BASE_URL}/item/${itemId}`, updates);
+    return { data: response.data, error: null };
+  } catch (err) {
+    return { data: null, error: err.message };
+  }
+};
+
+export const deleteItem = async (itemId) => {
+  try {
+    await axios.delete(`${API_BASE_URL}/item/${itemId}`);
+    return { error: null };
+  } catch (err) {
+    return { error: err.message };
   }
 };
 

@@ -1,94 +1,125 @@
 import React, { useEffect, useState } from "react";
-import { Card, CardContent, CardMedia, Typography, Grid2 } from "@mui/material";
-import InventoryList from "./Components/InventoryList";
-import { fetchPlayerview } from "../api/shopkeepAPI";
+import { Link } from "react-router-dom";
+import {
+  Box,
+  Grid2,
+  Card,
+  CardMedia,
+  CardContent,
+  Typography,
+} from "@mui/material";
+import { fetchAllShopkeeps } from "../api/shopkeepAPI";
+import { hoverCardSx } from "../theme";
 
-const ShopkeepDetails = () => {
-  const [shopkeep, setShopkeep] = useState(null);
+const PlayerView = () => {
+  const [shopkeeps, setShopkeeps] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    const loadShopkeep = async () => {
+    const load = async () => {
       setLoading(true);
-      const { data, error } = await fetchPlayerview();
-      if (data) setShopkeep(data);
+      const { data, error } = await fetchAllShopkeeps(true); // revealed only
+      if (data) setShopkeeps(data);
       if (error) setError(error);
       setLoading(false);
     };
-
-    loadShopkeep();
+    load();
   }, []);
 
-  if (loading) return <Typography>Loading...</Typography>;
-  if (error) return <Typography color="error">Error: {error}</Typography>;
+  const groupByLocation = (shopkeeps) =>
+    shopkeeps.reduce((acc, s) => {
+      const loc = s.location || "Unknown Location";
+      if (!acc[loc]) acc[loc] = [];
+      acc[loc].push(s);
+      return acc;
+    }, {});
 
-  const { shopkeep: shopkeepInfo, inventory } = shopkeep;
+  if (loading) return <Typography sx={{ p: 3 }}>Loading...</Typography>;
+  if (error)
+    return (
+      <Typography color="error" sx={{ p: 3 }}>
+        Error: {error}
+      </Typography>
+    );
+
+  const grouped = groupByLocation(shopkeeps);
+
+  if (!shopkeeps.length)
+    return (
+      <Typography sx={{ p: 3 }} color="text.secondary">
+        No shops available yet.
+      </Typography>
+    );
 
   return (
-    <Grid2
-      container
-      spacing={4}
-      justifyContent="flex-start"
-      style={{ flexFlow: "row", margin: "1rem" }}
-    >
-      <Grid2
-        item
-        xs={12}
-        sm={6}
-        md={4}
-        style={{ maxWidth: "400px", minWidth: "300px" }}
-      >
-        <Card>
-          <CardMedia
-            component="img"
-            image={shopkeepInfo.image_url}
-            alt={shopkeepInfo.name}
-          />
-          <CardContent>
-            <Typography variant="h5">{shopkeepInfo.name}</Typography>
-            <Typography variant="body1">{shopkeepInfo.description}</Typography>
-          </CardContent>
-        </Card>
-      </Grid2>
-
-      <Grid2
-        item
-        xs={12}
-        sm={6}
-        md={8}
-        style={{
-          width: "100%",
-          display: "flex",
-          flexDirection: "column",
-          height: "100vh",
-        }}
-      >
-        <div
-          style={{
-            position: "sticky",
-            top: 0,
-            background: "white",
-            zIndex: 2,
-            paddingBottom: "1rem",
-          }}
-        >
-          <Typography variant="h5">
-            {shopkeepInfo.shop_name} -{" "}
+    <Box sx={{ p: { xs: 2, md: 3 } }}>
+      {Object.entries(grouped).map(([location, shops]) => (
+        <Box key={location} sx={{ mb: 5 }}>
+          <Box
+            sx={{
+              position: "relative",
+              height: 120,
+              borderRadius: 3,
+              overflow: "hidden",
+              display: "flex",
+              alignItems: "center",
+              mb: 2,
+              backgroundImage:
+                "linear-gradient(90deg, rgba(20,18,10,0.85), rgba(20,18,10,0.15)), url('/castle_banner1.jpg')",
+              backgroundSize: "cover",
+              backgroundPosition: "center",
+              boxShadow: 3,
+            }}
+          >
             <Typography
-              variant="subtitle2"
-              component="span"
-              style={{ verticalAlign: "middle" }}
+              variant="h4"
+              sx={{
+                color: "common.white",
+                ml: 3,
+                textShadow: "0 2px 6px rgba(0,0,0,0.6)",
+              }}
             >
-              {shopkeepInfo.shop_type}
+              {location}
             </Typography>
-          </Typography>
-        </div>
+          </Box>
 
-        <InventoryList inventory={inventory} />
-      </Grid2>
-    </Grid2>
+          <Grid2 container spacing={3} justifyContent="flex-start">
+            {shops.map((shopkeep) => (
+              <Grid2 item xs={12} sm={6} md={4} key={shopkeep.id}>
+                <Link
+                  to={`/shop/${shopkeep.id}`}
+                  style={{ textDecoration: "none" }}
+                >
+                  <Card sx={hoverCardSx}>
+                    <CardMedia
+                      component="img"
+                      height="200"
+                      image={shopkeep.image_url}
+                      alt={shopkeep.name}
+                      sx={{ objectFit: "cover", objectPosition: "top" }}
+                    />
+                    <CardContent>
+                      <Typography variant="h6" align="center">
+                        {shopkeep.shop_name} — {shopkeep.shop_type}
+                      </Typography>
+                      <Typography
+                        variant="body2"
+                        align="center"
+                        color="text.secondary"
+                      >
+                        Owner: {shopkeep.name}
+                      </Typography>
+                    </CardContent>
+                  </Card>
+                </Link>
+              </Grid2>
+            ))}
+          </Grid2>
+        </Box>
+      ))}
+    </Box>
   );
 };
 
-export default ShopkeepDetails;
+export default PlayerView;
