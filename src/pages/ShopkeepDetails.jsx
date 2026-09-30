@@ -18,6 +18,7 @@ import InventoryList from "./Components/InventoryList";
 import {
   addItem,
   deleteItem,
+  deleteShopkeep,
   fetchShopkeepById,
   generateInventory,
   setPlayerview,
@@ -25,6 +26,7 @@ import {
   updateShopkeep,
 } from "../api/shopkeepAPI";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 
@@ -98,6 +100,13 @@ const ShopkeepDetails = () => {
     setShopkeep(prev => ({ ...prev, inventory: prev.inventory.map(item => item.id === itemId ? data : item) }));
   };
 
+  const handleDeleteShopkeep = async () => {
+    if (!window.confirm(`Delete ${shopkeep.shopkeep.name}? This cannot be undone.`)) return;
+    const { error } = await deleteShopkeep(id);
+    if (error) { alert(`Error: ${error}`); return; }
+    navigate("/admin");
+  };
+
   const handleItemDelete = async (itemId) => {
     const { error } = await deleteItem(itemId);
     if (error) { alert(`Error: ${error}`); return; }
@@ -165,6 +174,14 @@ const ShopkeepDetails = () => {
                     sx={{ bgcolor: "primary.main", color: "common.white", "&:hover": { bgcolor: "primary.dark" } }}
                   >
                     <VisibilityIcon />
+                  </IconButton>
+                </Tooltip>
+                <Tooltip title="Delete shopkeep">
+                  <IconButton
+                    onClick={handleDeleteShopkeep}
+                    sx={{ bgcolor: "error.main", color: "common.white", "&:hover": { bgcolor: "error.dark" } }}
+                  >
+                    <DeleteIcon />
                   </IconButton>
                 </Tooltip>
               </Stack>

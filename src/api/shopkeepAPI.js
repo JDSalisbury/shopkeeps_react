@@ -1,6 +1,10 @@
 import axios from "axios";
 import { API_BASE_URL } from "../config";
 
+const adminAxios = axios.create({
+  headers: { "x-api-key": process.env.REACT_APP_ADMIN_API_KEY },
+});
+
 export const fetchPlayerview = async () => {
   try {
     const response = await axios.get(`${API_BASE_URL}/playerview/`);
@@ -12,7 +16,7 @@ export const fetchPlayerview = async () => {
 
 export const setPlayerview = async (id) => {
   try {
-    const response = await axios.post(
+    const response = await adminAxios.post(
       `${API_BASE_URL}/set_playerview?shopkeep_id=${id}`
     );
 
@@ -33,7 +37,7 @@ export const fetchShopkeepById = async (id) => {
 
 export const generateInventory = async (id) => {
   try {
-    await axios.post(`${API_BASE_URL}/generate_inventory/${id}`);
+    await adminAxios.post(`${API_BASE_URL}/generate_inventory/${id}`);
     const response = await axios.get(`${API_BASE_URL}/shopkeep/${id}`); // Fetch updated inventory
     return { data: response.data, error: null };
   } catch (err) {
@@ -55,7 +59,7 @@ export const fetchAllShopkeeps = async (revealedOnly = false) => {
 
 export const revealShopkeep = async (id) => {
   try {
-    const response = await axios.patch(`${API_BASE_URL}/shopkeep/${id}/reveal`);
+    const response = await adminAxios.patch(`${API_BASE_URL}/shopkeep/${id}/reveal`);
     return { data: response.data, error: null };
   } catch (err) {
     return { data: null, error: err.message };
@@ -64,7 +68,7 @@ export const revealShopkeep = async (id) => {
 
 export const updateShopkeep = async (id, updates) => {
   try {
-    const response = await axios.patch(`${API_BASE_URL}/shopkeep/${id}`, updates);
+    const response = await adminAxios.patch(`${API_BASE_URL}/shopkeep/${id}`, updates);
     return { data: response.data, error: null };
   } catch (err) {
     return { data: null, error: err.message };
@@ -73,7 +77,7 @@ export const updateShopkeep = async (id, updates) => {
 
 export const addItem = async (shopkeepId, item) => {
   try {
-    const response = await axios.post(`${API_BASE_URL}/shopkeep/${shopkeepId}/item`, item);
+    const response = await adminAxios.post(`${API_BASE_URL}/shopkeep/${shopkeepId}/item`, item);
     return { data: response.data, error: null };
   } catch (err) {
     return { data: null, error: err.message };
@@ -82,7 +86,7 @@ export const addItem = async (shopkeepId, item) => {
 
 export const updateItem = async (itemId, updates) => {
   try {
-    const response = await axios.patch(`${API_BASE_URL}/item/${itemId}`, updates);
+    const response = await adminAxios.patch(`${API_BASE_URL}/item/${itemId}`, updates);
     return { data: response.data, error: null };
   } catch (err) {
     return { data: null, error: err.message };
@@ -91,7 +95,16 @@ export const updateItem = async (itemId, updates) => {
 
 export const deleteItem = async (itemId) => {
   try {
-    await axios.delete(`${API_BASE_URL}/item/${itemId}`);
+    await adminAxios.delete(`${API_BASE_URL}/item/${itemId}`);
+    return { error: null };
+  } catch (err) {
+    return { error: err.message };
+  }
+};
+
+export const deleteShopkeep = async (id) => {
+  try {
+    await adminAxios.delete(`${API_BASE_URL}/shopkeep/${id}`);
     return { error: null };
   } catch (err) {
     return { error: err.message };
@@ -112,7 +125,7 @@ export const addShopkeep = async (setLocation) => {
 
   try {
     console.log("Creating new shopkeep at location:", location);
-    const response = await axios.post(
+    const response = await adminAxios.post(
       `${API_BASE_URL}/generate_shopkeep?location=${location}`
     );
     console.log("Shopkeep created:", response.data);

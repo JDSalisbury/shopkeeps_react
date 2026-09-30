@@ -55,25 +55,25 @@ const PlayerView = () => {
   return (
     <Box sx={{ p: { xs: 2, md: 3 } }}>
       {Object.entries(grouped).map(([location, shops]) => (
-        <Box key={location} sx={{ mb: 5 }}>
+        <Box key={location} sx={{ mb: 3 }}>
           <Box
             sx={{
               position: "relative",
-              height: 120,
-              borderRadius: 3,
+              height: 72,
+              borderRadius: 2,
               overflow: "hidden",
               display: "flex",
               alignItems: "center",
-              mb: 2,
+              mb: 1.5,
               backgroundImage:
                 "linear-gradient(90deg, rgba(20,18,10,0.85), rgba(20,18,10,0.15)), url('/castle_banner1.jpg')",
               backgroundSize: "cover",
               backgroundPosition: "center",
-              boxShadow: 3,
+              boxShadow: 2,
             }}
           >
             <Typography
-              variant="h4"
+              variant="h5"
               sx={{
                 color: "common.white",
                 ml: 3,
@@ -84,9 +84,9 @@ const PlayerView = () => {
             </Typography>
           </Box>
 
-          <Grid2 container spacing={3} justifyContent="flex-start">
+          <Grid2 container spacing={2} justifyContent="flex-start">
             {shops.map((shopkeep) => (
-              <Grid2 item xs={12} sm={6} md={4} key={shopkeep.id}>
+              <Grid2 item xs={6} sm={4} md={3} key={shopkeep.id}>
                 <Link
                   to={`/shop/${shopkeep.id}`}
                   style={{ textDecoration: "none" }}
@@ -94,21 +94,17 @@ const PlayerView = () => {
                   <Card sx={hoverCardSx}>
                     <CardMedia
                       component="img"
-                      height="200"
+                      height="140"
                       image={shopkeep.image_url}
                       alt={shopkeep.name}
                       sx={{ objectFit: "cover", objectPosition: "top" }}
                     />
-                    <CardContent>
-                      <Typography variant="h6" align="center">
-                        {shopkeep.shop_name} — {shopkeep.shop_type}
+                    <CardContent sx={{ p: 1.5, "&:last-child": { pb: 1.5 } }}>
+                      <Typography variant="subtitle2" align="center" fontWeight={600} noWrap>
+                        {shopkeep.shop_name}
                       </Typography>
-                      <Typography
-                        variant="body2"
-                        align="center"
-                        color="text.secondary"
-                      >
-                        Owner: {shopkeep.name}
+                      <Typography variant="caption" align="center" color="text.secondary" display="block" noWrap>
+                        {shopkeep.shop_type} · {shopkeep.name}
                       </Typography>
                     </CardContent>
                   </Card>

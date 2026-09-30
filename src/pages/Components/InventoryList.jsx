@@ -3,7 +3,6 @@ import {
   Box,
   Button,
   Card,
-  Divider,
   IconButton,
   List,
   ListItem,
@@ -83,7 +82,7 @@ const InventoryList = ({ inventory, onAdd, onUpdate, onDelete }) => {
       <List disablePadding>
         {inventory.map((item, i) => (
           <React.Fragment key={item.id}>
-            {i > 0 && <Divider component="li" />}
+            {i > 0 && <li className="ornament-divider">✦</li>}
             {editingId === item.id ? (
               <ListItem>
                 <ItemForm
